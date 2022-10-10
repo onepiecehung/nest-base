@@ -1,0 +1,18 @@
+version: "3.5"
+services:
+    app:
+        container_name: "${CONTAINER_NAME}-api-service-dev"
+        restart: always
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - .:/usr/src/app
+            - /usr/src/app/node_modules
+        command: npm run start:dev
+        ports:
+            - '${M_PORT}:${PORT}'
+
+networks:
+    default:
+        name: '${NETWORK_NAME}'

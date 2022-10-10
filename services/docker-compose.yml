@@ -1,0 +1,30 @@
+version: '3.2'
+services:
+  mysqldb:
+    container_name: '${PROJECT_NAME}-mysqldb'
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_DATABASE: '${MYSQL_DATABASE}'
+    image: mysql
+    ports:
+      - '${MYSQL_PORT}:3306'
+    volumes:
+      - '/var/lib/mysql'
+    command: 'mysqld --innodb-flush-method=fsync --innodb-use-native-aio=0'
+  redis:
+    container_name: '${PROJECT_NAME}-redis'
+    restart: on-failure
+    image: redis:6.0.8
+    ports:
+      - '${REDIS_PORT}:6379'
+  rabbitmq:
+    container_name: '${PROJECT_NAME}-rabbitmq'
+    restart: on-failure
+    image: rabbitmq:3-management
+    ports:
+      - '${RABBIT_UI_PORT}:15672'
+      - '${RABBIT_API_PORT}:5672'
+networks:
+  default:
+    name: '${NETWORK_NAME}'
