@@ -1,6 +1,16 @@
 import { instanceToPlain } from 'class-transformer';
 import { WithTimestamp } from 'src/utils/entity/BaseEntity';
-import { Column, Entity, Index } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
+
+import { File } from '../../files/entities/file.entity';
+import { UserDevice } from './userDevice.entity';
 
 export enum UserRole {
   User = 'USER',
@@ -70,7 +80,7 @@ export class User extends WithTimestamp {
   nickname: string;
 
   @Column('longtext', { nullable: true })
-  name: string;
+  username: string;
 
   @Column({
     type: 'timestamp',
@@ -90,6 +100,13 @@ export class User extends WithTimestamp {
 
   @Column('varchar', { length: 255, nullable: true })
   password: string;
+
+  @OneToMany(() => UserDevice, (userDevice) => userDevice.user)
+  deviceToken: UserDevice[];
+
+  @OneToOne(() => File)
+  @JoinColumn()
+  avatar: File;
 
   toJSON() {
     const result = instanceToPlain(this);

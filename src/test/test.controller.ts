@@ -1,18 +1,21 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   UseGuards,
 } from '@nestjs/common';
-import { TestService } from './test.service';
+import { ApiTags } from '@nestjs/swagger';
+
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CreateTestDto } from './dto/create-test.dto';
 import { UpdateTestDto } from './dto/update-test.dto';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { TestService } from './test.service';
 
+@ApiTags('test')
 @Controller('test')
 export class TestController {
   constructor(private readonly testService: TestService) {}

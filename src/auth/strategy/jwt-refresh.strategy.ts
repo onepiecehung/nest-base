@@ -6,11 +6,14 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { User } from '../../users/entities/user.entity';
 import { CacheService } from '../../cache/cache.service';
+import { User } from '../../users/entities/user.entity';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtRefreshStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-refresh',
+) {
   constructor(
     private cacheService: CacheService,
     private configService: ConfigService,
@@ -26,20 +29,21 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
     const { id, _id } = payload;
-    if (!id) {
+    if (id) {
       throw new UnauthorizedException();
     }
 
-    const checkToken = await this.cacheService.get(`a_${_id}`);
+    const checkToken = await this.cacheService.get(`r_${_id}`);
 
     // console.log(checkToken);
 
     if (!checkToken) {
       throw new UnauthorizedException();
     }
+
     const userData = await this.userRepository.findOne({
       where: {
-        id: id,
+        id: +checkToken,
       },
     });
     // console.log('validate jwt', userData);

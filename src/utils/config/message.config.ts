@@ -34,6 +34,9 @@ export const MESSAGE_CODE = {
   TOKEN_EXPIRED: 1103,
   USER_ALREADY_LOGIN_EMAIL: 1104,
   USER_ALREADY_VERIFIED_EMAIL: 1105,
+
+  // TODO: File
+  FILE_NOT_FOUND: 1200,
 };
 
 export const MESSAGE_TEXT = {
@@ -76,4 +79,7 @@ export const MESSAGE_TEXT = {
   [MESSAGE_CODE.TOKEN_EXPIRED]:
     process.env.TOKEN_EXPIRED || `Token has expired`,
   [MESSAGE_CODE.USER_ALREADY_LOGIN_EMAIL]: `This user is already registered with the email, please login with the email and password.`,
+
+  // TODO: File
+  [MESSAGE_CODE.FILE_NOT_FOUND]: `File not found`,
 };

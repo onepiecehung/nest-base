@@ -6,13 +6,14 @@ import {
   Module,
   NestModule,
 } from '@nestjs/common';
+import { RequestMethod } from '@nestjs/common/enums';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
 import { CacheModule as CacheModuleCore } from './cache/cache.module';
+import { FilesModule } from './files/files.module';
 import { UuidMiddleware } from './middleware/uuid.middleware';
 import { TestModule } from './test/test.module';
 import { UsersModule } from './users/users.module';
@@ -46,6 +47,7 @@ import type { ClientOpts } from 'redis';
     AuthModule,
     UsersModule,
     CacheModuleCore,
+    FilesModule,
   ],
   providers: [
     {
@@ -61,6 +63,8 @@ import type { ClientOpts } from 'redis';
 // export class AppModule {}
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(UuidMiddleware).forRoutes(AuthController);
+    consumer
+      .apply(UuidMiddleware)
+      .forRoutes({ path: 'auth/loginSNS', method: RequestMethod.POST });
   }
 }

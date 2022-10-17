@@ -14,6 +14,7 @@ import { AuthService } from './auth.service';
 import { AppleAuthService } from './sns/apple-auth.service';
 import { KaKaoAuthService } from './sns/kakao-auth.service';
 import { NaverAuthService } from './sns/naver-auth.service';
+import { JwtRefreshStrategy } from './strategy/jwt-refresh.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 
 @Module({
@@ -40,6 +41,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
     AppleAuthService,
     NaverAuthService,
     JwtStrategy,
+    JwtRefreshStrategy,
     CacheService,
   ],
   exports: [AuthService],

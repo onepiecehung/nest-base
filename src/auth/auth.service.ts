@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { CacheService } from '../cache/cache.service';
@@ -65,7 +69,7 @@ export class AuthService {
         tokens,
       };
     } catch (error) {
-      return error;
+      throw new HttpException(error, error.status);
     }
   }
 
@@ -90,7 +94,7 @@ export class AuthService {
 
       return { accessToken, refreshToken };
     } catch (error) {
-      return error;
+      throw new HttpException(error, error.status);
     }
   }
 
@@ -98,14 +102,55 @@ export class AuthService {
     try {
       const { info } = payload;
       const { _id } = info;
-      console.log(_id);
+      // console.log(_id);
       await Promise.all([
         this.cacheService.del(`a_${_id}`),
         this.cacheService.del(`r_${_id}`),
       ]);
       return {};
     } catch (error) {
-      return error;
+      throw new HttpException(error, error.status);
+    }
+  }
+
+  async gAccessTokenViaRefToken(payload: any) {
+    try {
+      const { uuid } = payload;
+
+      const userId = await this.cacheService.get(`r_${uuid}`);
+
+      if (!userId) {
+        throw new UnauthorizedException();
+      }
+
+      // console.log(userId);
+
+      const accessToken = await this.jwtService.sign(
+        { id: +userId, _id: uuid },
+        { expiresIn: '1h', algorithm: 'HS256' },
+      );
+
+      await this.cacheService.set(`a_${uuid}`, userId, 60 * 60);
+
+      return { accessToken };
+    } catch (error) {
+      throw new HttpException(error, error.status);
+    }
+  }
+
+  async getAccessToken(payload: any) {
+    try {
+      // console.log(payload);
+      const { info } = payload;
+      const { _id } = info;
+
+      const data = this.gAccessTokenViaRefToken({
+        uuid: _id,
+      });
+
+      return data;
+    } catch (error) {
+      throw new HttpException(error, error.status);
     }
   }
 }
