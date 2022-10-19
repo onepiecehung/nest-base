@@ -1,4 +1,5 @@
 import { instanceToPlain } from 'class-transformer';
+import { Language } from 'src/utils/constant/language.constant';
 import { WithTimestamp } from 'src/utils/entity/BaseEntity';
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
@@ -19,6 +20,14 @@ export class UserDevice extends WithTimestamp {
     default: UserDeviceStatus.Active,
   })
   status: UserDeviceStatus;
+
+  @Index()
+  @Column({
+    type: 'enum',
+    enum: Language,
+    default: Language.Kor,
+  })
+  language: Language;
 
   @Column('varchar', { length: 255, nullable: true })
   deviceToken: string;

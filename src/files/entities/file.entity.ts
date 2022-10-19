@@ -1,7 +1,6 @@
 import { WithTimestamp } from 'src/utils/entity/BaseEntity';
 import { Column, Entity, Index } from 'typeorm';
-
-import { User } from '../../users/entities/user.entity';
+import { instanceToPlain } from 'class-transformer';
 
 export enum FileStatus {
   Inactivate = 'INACTIVATE',
@@ -39,4 +38,15 @@ export class File extends WithTimestamp {
 
   @Column('int', { nullable: false })
   user: number;
+
+  toJSON() {
+    const result = instanceToPlain(this);
+    delete result.key;
+    delete result.path;
+    delete result.originalName;
+    delete result.size;
+    delete result.fileType;
+    delete result.user;
+    return result;
+  }
 }

@@ -2,8 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
-import { TestController } from './test.controller';
-import { TestService } from './test.service';
+import { RabbitmqService } from './rabbitmq.service';
 
 @Module({
   imports: [
@@ -25,7 +24,6 @@ import { TestService } from './test.service';
       },
     ]),
   ],
-  controllers: [TestController],
-  providers: [TestService],
+  providers: [RabbitmqService],
 })
-export class TestModule {}
+export class RabbitmqModule {}

@@ -6,6 +6,7 @@ import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { CacheService } from '../cache/cache.service';
+import { FirebaseService } from '../firebase/firebase.service';
 import { User } from '../users/entities/user.entity';
 import { UsersModule } from '../users/users.module';
 import { AxiosService } from '../utils/http/axios.service';
@@ -40,6 +41,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
     KaKaoAuthService,
     AppleAuthService,
     NaverAuthService,
+    FirebaseService,
     JwtStrategy,
     JwtRefreshStrategy,
     CacheService,

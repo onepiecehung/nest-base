@@ -6,8 +6,9 @@ import {
 import { JwtService } from '@nestjs/jwt';
 
 import { CacheService } from '../cache/cache.service';
+import { FirebaseService } from '../firebase/firebase.service';
 import { UserType } from '../users/entities/user.entity';
-import { UserLoginSNSDto } from '../users/users.dto';
+import { UserLogin, UserLoginSNSDto, UserRegister } from '../users/users.dto';
 import { UsersService } from '../users/users.service';
 import { IVerifyInfo } from './auth.interface';
 import { AppleAuthService } from './sns/apple-auth.service';
@@ -21,6 +22,7 @@ export class AuthService {
     private kaKaoAuthService: KaKaoAuthService,
     private appleAuthService: AppleAuthService,
     private naverAuthService: NaverAuthService,
+    private firebaseService: FirebaseService,
     private jwtService: JwtService,
     private cacheService: CacheService,
   ) {}
@@ -33,9 +35,9 @@ export class AuthService {
       const socialToken: string = userLoginSNSDto.socialToken;
       let verifyData: IVerifyInfo | any = null;
       switch (userType) {
-        //   case UserType.Google:
-        //     verifyData = await this.firebaseService.authenticate(socialToken);
-        //     break;
+        case UserType.Google:
+          verifyData = await this.firebaseService.authenticate(socialToken);
+          break;
         case UserType.Apple:
           verifyData = await this.appleAuthService.authenticate(socialToken);
           break;
@@ -63,6 +65,16 @@ export class AuthService {
         userId: user.id,
         uuid: uuid,
       });
+
+      // TODO: Add device token
+      if (userLoginSNSDto.deviceToken) {
+        await this.usersService.addDeviceToken(
+          userLoginSNSDto.deviceToken,
+          userLoginSNSDto.language,
+          uuid,
+          user,
+        );
+      }
 
       return {
         user,
@@ -152,5 +164,44 @@ export class AuthService {
     } catch (error) {
       throw new HttpException(error, error.status);
     }
+  }
+
+  async register(userRegister: UserRegister) {
+    try {
+      // i don't know why this, don't have await before this function for get throw message :) fuk nest.js
+      const user = this.usersService.register(userRegister);
+
+      return user;
+    } catch (error) {
+      throw new HttpException(error, error.status);
+    }
+  }
+
+  async login(userLogin: UserLogin, query: any) {
+    // try {
+    const { uuid } = query;
+    // i don't know why this, don't have await before this function for get throw message :) fuk nest.js (remove try catch for working :))
+    const user = await this.usersService.login(
+      userLogin.email,
+      userLogin.password,
+    );
+    const tokens = await this.gTokenLogin({
+      userId: user.id,
+      uuid: uuid,
+    });
+
+    // TODO: Add device token
+    if (userLogin.deviceToken) {
+      await this.usersService.addDeviceToken(
+        userLogin.deviceToken,
+        userLogin.language,
+        uuid,
+        user,
+      );
+    }
+    return { user, tokens };
+    // } catch (error) {
+    //   throw new HttpException(error, error.status);
+    // }
   }
 }

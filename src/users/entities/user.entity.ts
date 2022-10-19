@@ -1,6 +1,7 @@
 import { instanceToPlain } from 'class-transformer';
 import { WithTimestamp } from 'src/utils/entity/BaseEntity';
 import {
+  BeforeInsert,
   Column,
   Entity,
   Index,
@@ -11,6 +12,8 @@ import {
 
 import { File } from '../../files/entities/file.entity';
 import { UserDevice } from './userDevice.entity';
+
+import { genSaltSync, hashSync } from 'bcrypt';
 
 export enum UserRole {
   User = 'USER',
@@ -44,6 +47,16 @@ export enum StepRegister {
 
 @Entity()
 export class User extends WithTimestamp {
+  @BeforeInsert()
+  hashPassword(): void {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const _this = this;
+    if (_this.password) {
+      const salt = genSaltSync(10);
+      _this.password = hashSync(_this.password, salt);
+    }
+  }
+
   @Index()
   @Column({
     type: 'enum',
@@ -92,6 +105,10 @@ export class User extends WithTimestamp {
   @Column('boolean', { default: true })
   receiveNotification: boolean;
 
+  // allow receive notification marketing
+  @Column('boolean', { default: true })
+  receiveNotificationMarketing: boolean;
+
   @Column('longtext', { nullable: true })
   socialId: string;
 
@@ -101,16 +118,24 @@ export class User extends WithTimestamp {
   @Column('varchar', { length: 255, nullable: true })
   password: string;
 
+  @Column('varchar', { length: 255, nullable: true })
+  introduction: string;
+
   @OneToMany(() => UserDevice, (userDevice) => userDevice.user)
   deviceToken: UserDevice[];
 
-  @OneToOne(() => File)
+  @OneToOne(() => File, {
+    // eager: true,
+    nullable: true,
+    // lazy: true,
+  })
   @JoinColumn()
   avatar: File;
 
   toJSON() {
     const result = instanceToPlain(this);
     delete result.password;
+    delete result.nickname;
     return result;
   }
 }

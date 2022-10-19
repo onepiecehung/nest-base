@@ -15,14 +15,17 @@ import { AuthModule } from './auth/auth.module';
 import { CacheModule as CacheModuleCore } from './cache/cache.module';
 import { FilesModule } from './files/files.module';
 import { UuidMiddleware } from './middleware/uuid.middleware';
+import { RabbitmqModule } from './rabbitmq/rabbitmq.module';
 import { TestModule } from './test/test.module';
 import { UsersModule } from './users/users.module';
 import { config, configValidationSchema } from './utils/config/config';
 import { DatabaseConfig } from './utils/config/database.config';
 import { HttpExceptionFilter } from './utils/filter/http-exception.filter';
 import { TransformInterceptor } from './utils/interceptor/transform.interceptor';
+import { WorkerModule } from './worker/worker.module';
 
 import type { ClientOpts } from 'redis';
+import { PetsModule } from './pets/pets.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -48,6 +51,9 @@ import type { ClientOpts } from 'redis';
     UsersModule,
     CacheModuleCore,
     FilesModule,
+    WorkerModule,
+    RabbitmqModule,
+    PetsModule,
   ],
   providers: [
     {
@@ -65,6 +71,9 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(UuidMiddleware)
-      .forRoutes({ path: 'auth/loginSNS', method: RequestMethod.POST });
+      .forRoutes(
+        { path: 'auth/loginSNS', method: RequestMethod.POST },
+        { path: 'auth/login', method: RequestMethod.POST },
+      );
   }
 }

@@ -5,7 +5,7 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { JwtRefreshAuthGuard } from '../auth/guard/jwt-refresh-auth.guard';
-import { UserLoginSNSDto } from '../users/users.dto';
+import { UserLogin, UserLoginSNSDto, UserRegister } from '../users/users.dto';
 import { AuthService } from './auth.service';
 
 @ApiTags('auth')
@@ -19,6 +19,18 @@ export class AuthController {
     @Req() req: Request,
   ) {
     const data = await this.authService.loginSNS(userLoginSNSDto, req.query);
+    return data;
+  }
+
+  @Post('login')
+  async login(@Body() userLoginDto: UserLogin, @Req() req: Request) {
+    const data = await this.authService.login(userLoginDto, req.query);
+    return data;
+  }
+
+  @Post('register')
+  async register(@Body() userRegister: UserRegister) {
+    const data = await this.authService.register(userRegister);
     return data;
   }
 
