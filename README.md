@@ -56,3 +56,5 @@ RABBIT_HOST=amqp://guest:guest@localhost:5672
 RABBIT_QUEUE=nest
 ```
 # RUN  `npm run start:dev`
+
+## http://localhost:3000/api/docs
