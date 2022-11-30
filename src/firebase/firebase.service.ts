@@ -4,7 +4,7 @@ import { IVerifyInfo } from 'src/auth/auth.interface';
 
 import { Injectable } from '@nestjs/common';
 
-import * as firebaseConfig from './firebase.config.json';
+import { firebaseConfig } from './firebase.config';
 
 const firebase_params = {
   type: firebaseConfig.type,
