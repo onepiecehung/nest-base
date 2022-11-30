@@ -37,3 +37,5 @@ lerna-debug.log*
 # dotenv
 /.env
 *.env
+mysql-volume
+src/firebase/firebase.config.json
