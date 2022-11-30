@@ -1,6 +1,7 @@
 # compiled output
 /dist
 /node_modules
+/src/firebase/firebase.config.json
 
 # Logs
 logs
@@ -38,5 +39,3 @@ lerna-debug.log*
 /.env
 *.env
 mysql-volume
-src/firebase/firebase.config.json
-src/firebase/firebase.config.json
