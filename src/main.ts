@@ -24,8 +24,8 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
-    .setTitle('SuperDat APIs')
-    .setDescription('SuperDat APIs')
+    .setTitle('Nest APIs')
+    .setDescription('Nest APIs')
     .setVersion('1.0')
     .addBearerAuth(
       {

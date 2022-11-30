@@ -21,22 +21,57 @@ export class HttpExceptionFilter implements ExceptionFilter {
     // eslint-disable-next-line prefer-const
     let text: string | object | any = exception.getResponse();
 
+    console.log('===========> error: ', text);
+    // console.log('text', text, typeof text);
+
     // eslint-disable-next-line prefer-const
     let messageCode = 0;
 
     if (typeof text === 'object') {
       const responseError: any = text.response;
+
       // console.log(responseError);
       if (text.hasOwnProperty('message')) {
         text = text.message;
         messageCode = status;
       }
+
+      if (text?.hasOwnProperty('messageCode')) {
+        // console.log(123);
+        messageCode = text?.messageCode;
+        text = MESSAGE_TEXT[messageCode];
+      }
       // console.log(messageCode);
       // console.log(text);
       if (responseError?.hasOwnProperty('messageCode')) {
+        // console.log(123);
         messageCode = responseError?.messageCode;
         text = MESSAGE_TEXT[messageCode];
       }
+
+      if (responseError?.response) {
+        const err = responseError.response;
+        console.log(err);
+        console.log(responseError);
+        if (err.hasOwnProperty('message')) {
+          text = err.message;
+          messageCode = status;
+        }
+
+        if (responseError?.hasOwnProperty('messageCode')) {
+          // console.log(123);
+          messageCode = responseError?.messageCode;
+          text = MESSAGE_TEXT[messageCode];
+        }
+        // console.log(messageCode);
+        // console.log(text);
+        if (err?.hasOwnProperty('messageCode')) {
+          messageCode = err?.messageCode;
+          text = MESSAGE_TEXT[messageCode];
+        }
+      }
+    } else {
+      messageCode = status;
     }
     // console.log(exception);
     response.status(status).json({

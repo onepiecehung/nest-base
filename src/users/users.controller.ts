@@ -1,10 +1,13 @@
 import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { ANY_PERMISSION } from 'src/auth/permission/permission';
+import { Auth } from 'src/utils/decorators/auth.decorator';
 
 import {
   Body,
   Controller,
   Get,
+  Param,
   Put,
   Query,
   Req,
@@ -12,7 +15,11 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { UserUpdateProfile, UserUpdateUsername } from './users.dto';
+import {
+  GetUsersDto,
+  UserUpdateProfile,
+  UserUpdateUsername,
+} from './users.dto';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
@@ -50,6 +57,13 @@ export class UsersController {
     return data;
   }
 
+  @Get('search')
+  @Auth(ANY_PERMISSION)
+  async searchUsers(@Query() getUsersDto: GetUsersDto, @Req() req: Request) {
+    const data = await this.usersService.searchUsers(getUsersDto, req.user);
+    return data;
+  }
+
   @Get('find')
   // @Auth(ANY_PERMISSION)
   async find(@Query() query: any) {
@@ -59,14 +73,17 @@ export class UsersController {
     }
 
     if (query?.email) {
-      const data = await this.usersService.findUsername(query.email);
+      const data = await this.usersService.findEmail(query.email);
       return data;
     }
 
     return { isExists: false };
   }
-  // async findEmail(@Query('email') email: string) {
-  //   const data = await this.usersService.findEmail(email);
-  //   return data;
-  // }
+
+  @Get(':id')
+  @Auth(ANY_PERMISSION)
+  async getUserById(@Param('id') userId: string, @Req() req: Request) {
+    const data = await this.usersService.getUserById(+userId, req.user);
+    return data;
+  }
 }

@@ -25,7 +25,6 @@ import { TransformInterceptor } from './utils/interceptor/transform.interceptor'
 import { WorkerModule } from './worker/worker.module';
 
 import type { ClientOpts } from 'redis';
-import { PetsModule } from './pets/pets.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -53,7 +52,6 @@ import { PetsModule } from './pets/pets.module';
     FilesModule,
     WorkerModule,
     RabbitmqModule,
-    PetsModule,
   ],
   providers: [
     {

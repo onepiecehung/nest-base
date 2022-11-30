@@ -21,4 +21,17 @@ export class AxiosService {
       ),
     );
   }
+
+  public async post(
+    url: string,
+    configuration?: AxiosRequestConfig,
+  ): Promise<any> {
+    return lastValueFrom(
+      this.httpService.post(url, configuration).pipe(
+        map((res) => {
+          return res || null;
+        }),
+      ),
+    );
+  }
 }

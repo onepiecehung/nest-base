@@ -39,3 +39,4 @@ lerna-debug.log*
 *.env
 mysql-volume
 src/firebase/firebase.config.json
+src/firebase/firebase.config.json

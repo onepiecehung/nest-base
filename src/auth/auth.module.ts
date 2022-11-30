@@ -1,3 +1,5 @@
+import { UserAccessFrequency } from 'src/users/entities/userAccessFrequency.entity';
+
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -15,8 +17,10 @@ import { AuthService } from './auth.service';
 import { AppleAuthService } from './sns/apple-auth.service';
 import { KaKaoAuthService } from './sns/kakao-auth.service';
 import { NaverAuthService } from './sns/naver-auth.service';
+import { JwtPassAppStrategy } from './strategy/jwt-pass-app.strategy';
 import { JwtRefreshStrategy } from './strategy/jwt-refresh.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { PassAppAuthService } from './verify/passApp.verify';
 
 @Module({
   imports: [
@@ -33,7 +37,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
       timeout: 5000,
       maxRedirects: 5,
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, UserAccessFrequency]),
   ],
   providers: [
     AuthService,
@@ -41,9 +45,11 @@ import { JwtStrategy } from './strategy/jwt.strategy';
     KaKaoAuthService,
     AppleAuthService,
     NaverAuthService,
+    PassAppAuthService,
     FirebaseService,
     JwtStrategy,
     JwtRefreshStrategy,
+    JwtPassAppStrategy,
     CacheService,
   ],
   exports: [AuthService],

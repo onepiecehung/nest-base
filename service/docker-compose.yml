@@ -1,4 +1,4 @@
-version: '3.2'
+version: '3.8'
 services:
   mysqldb:
     container_name: '${PROJECT_NAME}-mysqldb'
@@ -10,7 +10,7 @@ services:
     ports:
       - '${MYSQL_PORT}:3306'
     volumes:
-      - '/var/lib/mysql'
+      - './mysql-volume:/var/lib/mysql'
     command: 'mysqld --innodb-flush-method=fsync --innodb-use-native-aio=0'
   redis:
     container_name: '${PROJECT_NAME}-redis'

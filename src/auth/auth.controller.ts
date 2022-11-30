@@ -5,8 +5,16 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { JwtRefreshAuthGuard } from '../auth/guard/jwt-refresh-auth.guard';
-import { UserLogin, UserLoginSNSDto, UserRegister } from '../users/users.dto';
+import {
+  UserForgotPasswordDto,
+  UserLogin,
+  UserLoginSNSDto,
+  UserRegister,
+  UserVerifyPassAppDto,
+  UserVerifyPassAppForgotPasswordDto,
+} from '../users/users.dto';
 import { AuthService } from './auth.service';
+import { JwtPassAppAuthGuard } from './guard/jwt-pass-app-auth.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -45,6 +53,39 @@ export class AuthController {
   @UseGuards(JwtRefreshAuthGuard)
   async getAccessToken(@Req() req: Request) {
     const data = await this.authService.getAccessToken(req.user);
+    return data;
+  }
+
+  @Put('pass-app')
+  @UseGuards(JwtPassAppAuthGuard)
+  async verifyPassApp(
+    @Body() userVerifyPassAppDto: UserVerifyPassAppDto,
+    @Req() req: Request,
+  ) {
+    const data = await this.authService.verifyPassApp(
+      userVerifyPassAppDto,
+      req.user,
+    );
+    return data;
+  }
+
+  @Put('pass-app-pw')
+  async verifyPassAppToGetPassword(
+    @Body()
+    userVerifyPassAppForgotPasswordDto: UserVerifyPassAppForgotPasswordDto,
+  ) {
+    const data = await this.authService.verifyPassAppToGetPassword(
+      userVerifyPassAppForgotPasswordDto,
+    );
+    return data;
+  }
+
+  @Put('forgot-password')
+  async forgotPassword(
+    @Body()
+    userForgotPassword: UserForgotPasswordDto,
+  ) {
+    const data = await this.authService.forgotPassword(userForgotPassword);
     return data;
   }
 }

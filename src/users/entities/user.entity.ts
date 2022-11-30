@@ -1,3 +1,4 @@
+import { genSaltSync, hashSync } from 'bcrypt';
 import { instanceToPlain } from 'class-transformer';
 import { WithTimestamp } from 'src/utils/entity/BaseEntity';
 import {
@@ -11,9 +12,8 @@ import {
 } from 'typeorm';
 
 import { File } from '../../files/entities/file.entity';
+import { UserAccessFrequency } from './userAccessFrequency.entity';
 import { UserDevice } from './userDevice.entity';
-
-import { genSaltSync, hashSync } from 'bcrypt';
 
 export enum UserRole {
   User = 'USER',
@@ -43,6 +43,7 @@ export enum StepRegister {
   verifiedPhoneNumber = 'VERIFIED_PHONE_NUMBER',
   verifiedEmail = 'VERIFIED_EMAIL',
   verifiedNickname = 'VERIFIED_NICKNAME',
+  verifiedPASSApp = 'VERIFIED_PASS_APP',
 }
 
 @Entity()
@@ -95,11 +96,20 @@ export class User extends WithTimestamp {
   @Column('longtext', { nullable: true })
   username: string;
 
+  @Column('longtext', { nullable: true })
+  name: string;
+
   @Column({
     type: 'timestamp',
     nullable: true,
   })
   dob: Date;
+
+  @Column('boolean', { default: false })
+  blocked: boolean;
+
+  @Column('boolean', { default: false })
+  followed: boolean;
 
   // allow receive notification
   @Column('boolean', { default: true })
@@ -121,6 +131,18 @@ export class User extends WithTimestamp {
   @Column('varchar', { length: 255, nullable: true })
   introduction: string;
 
+  @Column('varchar', { length: 255, nullable: true })
+  uniqueKeyPassApp: string;
+
+  @Column('int', { default: 0 })
+  totalFollowers: number;
+
+  @Column('int', { default: 0 })
+  totalFollowing: number;
+
+  @Column('int', { default: 0 })
+  totalReported: number;
+
   @OneToMany(() => UserDevice, (userDevice) => userDevice.user)
   deviceToken: UserDevice[];
 
@@ -132,10 +154,17 @@ export class User extends WithTimestamp {
   @JoinColumn()
   avatar: File;
 
+  @OneToMany(
+    () => UserAccessFrequency,
+    (userAccessFrequency) => userAccessFrequency.user,
+  )
+  accessFrequency: UserAccessFrequency[];
+
   toJSON() {
     const result = instanceToPlain(this);
     delete result.password;
     delete result.nickname;
+    delete result.uniqueKeyPassApp;
     return result;
   }
 }

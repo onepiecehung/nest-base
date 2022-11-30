@@ -1,9 +1,13 @@
 import {
   ExecutionContext,
+  HttpException,
+  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { StepRegister } from 'src/users/entities/user.entity';
+import { MESSAGE_CODE } from 'src/utils/config/message.config';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -13,12 +17,27 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return super.canActivate(context);
   }
 
-  handleRequest(err, user, info) {
+  handleRequest(err, jwtDecode, info) {
     // You can throw an exception based on either "info" or "err" arguments
-    if (err || !user) {
+    if (err || !jwtDecode) {
       throw err || new UnauthorizedException();
     }
 
-    return user;
+    // console.log(jwtDecode);
+
+    const { user } = jwtDecode;
+
+    // console.log(user);
+
+    if (user.stepRegister !== StepRegister.registered) {
+      throw new HttpException(
+        {
+          messageCode: MESSAGE_CODE.USER_NOT_COMPLETED_REGISTRATION,
+        },
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    return jwtDecode;
   }
 }
